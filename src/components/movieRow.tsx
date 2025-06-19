@@ -3,6 +3,10 @@ import axios from 'axios'
 import '../App.css'
 import MovieCard from './movieCard'
 
+import TrailerModal from './trailer-modal'
+
+
+
 type Props = {
     title: string
     fetchUrl: string
@@ -23,6 +27,8 @@ const base_url = 'https://image.tmdb.org/t/p/original';
 
 export default function MovieRow({ title, fetchUrl, isLargeRow = false }: Props) {
     const [movies, setMovies] = useState<Movie[]>([]);
+    const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null)
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,14 +43,16 @@ export default function MovieRow({ title, fetchUrl, isLargeRow = false }: Props)
             <h2 className='text-xl font-bold mb-2'>{title}</h2>
             <div className="flex overflow-x-auto space-x-2 scrollbar-hide p-2 -ml-2">
                 {movies.map((movie) => (
-                    <img
-                        key={movie.id}
-                        src={`${base_url}${movie.poster_path}`}
-                        alt={movie.name || movie.title}
-                        className="w-36 sm:w-48 max-h-64 object-cover rounded transition-transform hover:scale-105"
-                    />
+                    <MovieCard
+  key={movie.id}
+  movie={movie}
+  onPlay={() => setSelectedMovieId(movie.id)} // This triggers the modal
+/>
                 ))}
             </div>
+            {selectedMovieId && (
+        <TrailerModal movieId={selectedMovieId} onClose={() => setSelectedMovieId(null)} />
+      )}
         </div>
     )
 }
